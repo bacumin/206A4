@@ -1,6 +1,8 @@
 
 <!DOCTYPE html>
 <html>
+<head>
+    <link rel="stylesheet" href="styles.css">
   <body background="http://image.shutterstock.com/z/stock-photo-seamless-pattern-with-petroglyph-goats-handmade-blue-watercolor-goats-on-white-background-222380659.jpg">
     <p align="center">
     <h1 style="color:red;text-align:center;"> You have been visited by the question goat.
@@ -12,7 +14,7 @@
           style="width:700px;height:400px;margin: 0px auto; display:block;">
     </p>
 
-  <form action="room.cgi" method="GET" align="center">
+  <form action="http://cgi.cs.mcgill.ca/~bcumin1/cgi-bin/challenge.py" method="get" align="center">
     <input align="center" style="width: 750px; height 100px ; opacity:0.6;"
     type="text" name="user_input" placeholder="Enter your answer">
     <br />
@@ -20,34 +22,50 @@
       ;height:20px;" type="submit" value="Enter">
   </form>
 
+
+  <div id="directions">
+    <form action="/~bcumin1/transporter.py" id="N">
+    <input type="submit" value="North" />
+    </form>
+    <form action="/~bcumin1/transporter.py" id="W">
+    <input type="submit" value="West" />
+    </form>
+    <form action="/~bcumin1/transporter.py" id="E">
+    <input type="submit" value="East" />
+    </form>
+    <form action="/~bcumin1/transporter.py" id="S">
+    <input type="submit" value="South" />
+    </form>
+  </div>
+
   <table>
     <tr>
       <th></th>
       <th>
-        <form action="http://google.com">
-        <input type="submit" value="North" />
+        <form action="/~bcumin1/cgi-bin/transporter.py">
+        <input type="submit" value="North" name="direction"/>
         </form>
       </th>
       <th></th>
     </tr>
     <tr>
       <td>
-        <form action="http://google.com">
-        <input type="submit" value="West" />
+        <form action="/~bcumin1/cgi-bin/transporter.py">
+        <input type="submit" value="West" name="direction"/>
         </form>
       </td>
       <td></td>
       <td>
-        <form action="http://google.com">
-        <input type="submit" value="East" />
+        <form action="/~bcumin1/cgi-bin/transporter.py">
+        <input type="submit" value="East" name="direction"/>
         </form>
       </td>
     </tr>
     <tr>
       <td></td>
-      <td>
-        <form action="http://cgi.cs.mcgill.ca/~mcamin/room.html">
-        <input type="submit" value="South" />
+      <td> <!-- SHOULD CHANGE THIS TO TRANSPORTER.PY FOR TARGET WEB PAGE -->
+        <form action="/~bcumin1/cgi-bin/transporter.py">
+        <input type="submit" value="South" name="direction"/>
         </form>
       </td>
       <td></td>
