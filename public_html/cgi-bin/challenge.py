@@ -86,6 +86,11 @@ elif(form.getvalue('user_input') in ['QUIT']):
     <META http-equiv="refresh" content="2;URL=http://cgi.cs.mcgill.ca/~bcumin1/room.html">
     </html>
     """
+elif("user_input" not in form):
+    print """
+    <html>
+    </html>
+    """
 else:
     print """
     <html>

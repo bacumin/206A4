@@ -13,6 +13,63 @@ const char * redirect_page_format =
 "</head>\n"
 "</html>\n";
 
+const char * page_print=
+"<!DOCTYPE html>"
+"<html>"
+"	<head>"
+"	 <h1 style=\"color:red;text-align:center;\"> %s"
+"    </h1>"
+"	</head>"
+"  <body background=\"http://image.shutterstock.com/z/stock-photo-seamless-pattern-with-petroglyph-goats-handmade-blue-watercolor-goats-on-white-background-222380659.jpg\">"
+"    <p align=\"center\"> "
+"    <img src=\"https://thinkplanrun2014.files.wordpress.com/2015/07/goat.jpg\""
+"          alt=\"goat master\""
+"          style=\"width:700px;height:400px;margin: 0px auto; display:block;\">"
+"    </p>"
+""
+"  <form action=\"room.cgi\" method=\"get\" align=\"center\">"
+"    <input align=\"center\" style=\"width: 750px; height 100px ; opacity:0.6;\""
+"    type=\"text\" name=\"user_input\" placeholder=\"Enter your answer\">"
+"    <br />"
+"    <input title=\"commands: PLAY, DROP, EXIT, REFRESH\" style=\"width:100p; height:20px;\" type=\"submit\" value=\"Enter\">"
+"  </form>"
+""
+"  <table>"
+"    <tr>"
+"      <th></th>"
+"      <th>"
+"        <form action=\"http://cs.mcgill.ca/~bcumin1/transporter.py\">"
+"        <input type=\"submit\" value=\"North\" />"
+"        </form>"
+"      </th>"
+"      <th></th>"
+"    </tr>"
+"    <tr>"
+"      <td>"
+"        <form action=\"http://google.com\">"
+"        <input type=\"submit\" value=\"West\" />"
+"        </form>"
+"      </td>"
+"      <td></td>"
+"      <td>"
+"        <form action=\"http://google.com\">"
+"        <input type=\"submit\" value=\"East\" />"
+"        </form>"
+"      </td>"
+"    </tr>"
+"    <tr>"
+"      <td></td>"
+"      <td> <!-- SHOULD CHANGE THIS TO TRANSPORTER.PY FOR TARGET WEB PAGE -->"
+"        <form action=\"http://cgi.cs.mcgill.ca/~mcamin/room.html\">"
+"        <input type=\"submit\" value=\"South\" />"
+"        </form>"
+"      </td>"
+"      <td></td>"
+"    </tr>"
+"  </table>"
+"  </body>"
+"</html>";
+
 //drop n gold pieces
 //for every 2 gold pieces user gets 1 manna from the universe
 //the gold pieces are added to the hidden resources of the room
@@ -72,7 +129,7 @@ int exit1(){
 //redraw the screen with the player's inventory preserved
 int refresh(){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf (redirect_page_format, getenv ("HTTP_REFERER"));
+	printf (page_print, "THIS PAGE WAS REFRESHED");
 	return 0;
 }
 
@@ -90,36 +147,30 @@ int error1(char* command){
 //read command and compare
 int main(void){
 	//general variables
-
 	getCsv();
 
-	//get from POST
+	//get from GET
 	char *data=getenv("QUERY_STRING");
 	int n=0;
-	data=data+strlen("user_input=");
-
-	
-	char *command=strtok(data, "+");
-	//should the compariswon be made regardless of case?
-	if (strcmp(command, "DROP")==0){
-		n=atoi(strtok(NULL, "+"));
-		drop(n);
+	if (strlen(data)!=0)
+	{
+		data=data+strlen("user_input=");
+		char *command=strtok(data, "+");
+		if (strcmp(command, "DROP")==0){
+			n=atoi(strtok(NULL, "+"));
+			drop(n);
+		}
+		else if (strcmp(command, "PLAY")==0)
+			play();
+		else if (strcmp(command, "EXIT")==0)
+			exit1();
+		else if (strcmp(command, "REFRESH")==0)
+			refresh();
+		else
+			error1(command);
 	}
-	else if (strcmp(command, "PLAY")==0)
-		play();
-	else if (strcmp(command, "EXIT")==0)
-		exit1();
-	else if (strcmp(command, "REFRESH")==0)
+	else {
 		refresh();
-	else
-		error1(command);
+	}
 
-	//output to browser
-
-
-	//manna and gold pieces cannot go below 0, 
-	//player cannot take them when below zero
 }
-
-
-
