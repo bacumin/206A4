@@ -1,0 +1,16 @@
+
+#directions {
+  display: flex;
+}
+#N {
+  align-items: flex-start;
+}
+#S {
+  align-items: flex-end;
+}
+#W {
+  align-self: flex-start;
+}
+#E {
+  align-self: flex-end;
+}

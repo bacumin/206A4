@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int rManna=0, pManna=0, rGold=0, pGold=0, occupied=0;
+int rManna=0, pManna=1, rGold=0, pGold=0, occupied=0;
 char* game_name="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/challenge.py";
 char* csv="resources.csv";
 const char * redirect_page_format =
@@ -28,6 +28,7 @@ const char * page_print=
 "    </p>"
 ""
 "  <form action=\"room.cgi\" method=\"get\" align=\"center\">"
+"  <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">"
 "    <input align=\"center\" style=\"width: 750px; height 100px ; opacity:0.6;\""
 "    type=\"text\" name=\"user_input\" placeholder=\"Enter your answer\">"
 "    <br />"
@@ -38,7 +39,9 @@ const char * page_print=
 "    <tr>"
 "      <th></th>"
 "      <th>"
-"        <form action=\"http://cs.mcgill.ca/~bcumin1/transporter.py\">"
+"        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
+"        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"North\" />"
 "        </form>"
 "      </th>"
@@ -46,21 +49,26 @@ const char * page_print=
 "    </tr>"
 "    <tr>"
 "      <td>"
-"        <form action=\"http://google.com\">"
+"        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
+"        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"West\" />"
 "        </form>"
 "      </td>"
 "      <td></td>"
 "      <td>"
-"        <form action=\"http://google.com\">"
-"        <input type=\"submit\" value=\"East\" />"
+"        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
+"        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">""        <input type=\"submit\" value=\"East\" />"
 "        </form>"
 "      </td>"
 "    </tr>"
 "    <tr>"
 "      <td></td>"
 "      <td> <!-- SHOULD CHANGE THIS TO TRANSPORTER.PY FOR TARGET WEB PAGE -->"
-"        <form action=\"http://cgi.cs.mcgill.ca/~mcamin/room.html\">"
+"        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
+"        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"South\" />"
 "        </form>"
 "      </td>"
@@ -129,19 +137,23 @@ int exit1(){
 //redraw the screen with the player's inventory preserved
 int refresh(){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf (page_print, "THIS PAGE WAS REFRESHED");
+	printf (page_print, "You have been visited by the question goat.\nAnswer his goat-related questions for 7 years of goat luck!",pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold);
 	return 0;
 }
 
 
 int error1(char* command){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf("Error. Command not found.");
+	printf(page_print,"Error. Command not found.", pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold);
 	
-	// printf(file);
+	return 0;
+}
 
-	printf("<html>\n");
-	printf("<h1>hello, your command was:%s\n", command);
+int game_over(){
+	occupied=0;
+	writeCsv();
+	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
+	printf("<h1>You won! Game over.");
 	return 0;
 }
 //read command and compare
@@ -151,13 +163,16 @@ int main(void){
 
 	//get from GET
 	char *data=getenv("QUERY_STRING");
+	char command[50];
 	int n=0;
 	if (strlen(data)!=0)
 	{
-		data=data+strlen("user_input=");
-		char *command=strtok(data, "+");
-		if (strcmp(command, "DROP")==0){
-			n=atoi(strtok(NULL, "+"));
+		sscanf(data, "inventory=%d%%2C%d&user_input=%s", &pManna, &pGold, command);
+		
+		if (pGold>=100)
+			game_over();
+		if (strncmp(command, "DROP", 4)==0){
+			sscanf(command, "%s+%d", command, n);
 			drop(n);
 		}
 		else if (strcmp(command, "PLAY")==0)

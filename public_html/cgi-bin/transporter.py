@@ -1,32 +1,53 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-print("Content-type: text/html")
-print()
-print(""")
-<html>
 
-<head><title>Sample cgi script</title></head>
-
-<body>
-
-    <h3> sample h3 </h3>
-"""
-
+import csv
+import urllib2
 import cgi
-form=cgi.FieldStorage()
-message=form.getvalue("message", "(no message)")
+import cgitb
+cgitb.enable()
 
-print(""")
+#receives url player came from a.out, and inventory
+urls= {
+    "North":"http://cgi.cs.mcgill.ca/~bcumin1",
+    "South":"http://cgi.cs.mcgill.ca/~bcumin1",
+    "West":"http://cgi.cs.mcgill.ca/~bcumin1",
+    "East":"http://cgi.cs.mcgill.ca/~bcumin1",
+}
 
- <p>Previous message: %s</p>
+url='http://cgi.cs.mcgill.ca/~bcumin1/room.html'
+inventory='10,10'
 
-    <p>form
+form = cgi.FieldStorage()
+direction=form["direction"].value
+base_url = urls[direction]
 
-        <form method="post" action="index.cgi">
-        <p>message: <input type="text" name="message"/></p>
-    </form>
+url_resources=base_url+"/resources.csv"
+url_redirect=base_url+"/cgi-bin/a.out"
 
-</body>
+occupied="abc"
+response = urllib2.urlopen(url_resources)
+csvFile=csv.reader(response)
+manna=0;gold=0;occupied=0;
+for row in csvFile:
+    manna=row[0]
+    gold=row[1]
+    occupied=row[2]
 
+#if it is occupied
+if(occupied != '0'):
+    print("Status: 303 See other")
+    print("Location: /~bcumin1/a.out?user_input=REFRESH")
+else:
+    print("")
+    print("Status: 303 See other")
+    print("Location: /"+url_redirect)
+
+
+print "Content-type: text/html"
+print
+print """
+<html>
+    <h1> %s </h1>
 </html>
-""" % cgi.escape(message)
+"""%(occupied)

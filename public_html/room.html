@@ -14,11 +14,12 @@
     </p>
 
   <form action="cgi-bin/room.cgi" method="get" align="center">
+  	<input type="hidden" name="inventory" value="1,0">
     <input align="center" style="width: 750px; height 100px ; opacity:0.6;"
     type="text" name="user_input" placeholder="Enter your answer">
     <br />
     <input title="commands: PLAY, DROP, EXIT, REFRESH" style="width:100px
-      ;height:20px;" type="submit" value="Enter">
+      ;height:25px;" type="submit" value="Enter">
   </form>
 
   <table>
@@ -26,6 +27,8 @@
       <th></th>
       <th>
         <form action="http://cs.mcgill.ca/~bcumin1/transporter.py">
+        <input type="hidden" name="inv" value="1,0">
+        <input type="hidden" name="url" value="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH">
         <input type="submit" value="North" />
         </form>
       </th>
@@ -34,12 +37,16 @@
     <tr>
       <td>
         <form action="http://google.com">
+        <input type="hidden" name="inv" value="1,0">
+        <input type="hidden" name="url" value="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH">
         <input type="submit" value="West" />
         </form>
       </td>
       <td></td>
       <td>
         <form action="http://google.com">
+        <input type="hidden" name="inv" value="1,0">
+        <input type="hidden" name="url" value="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH">
         <input type="submit" value="East" />
         </form>
       </td>
@@ -48,6 +55,8 @@
       <td></td>
       <td> <!-- SHOULD CHANGE THIS TO TRANSPORTER.PY FOR TARGET WEB PAGE -->
         <form action="http://cgi.cs.mcgill.ca/~mcamin/room.html">
+        <input type="hidden" name="inv" value="1,0">
+        <input type="hidden" name="url" value="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH">
         <input type="submit" value="South" />
         </form>
       </td>
