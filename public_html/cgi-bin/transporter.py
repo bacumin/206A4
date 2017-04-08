@@ -7,26 +7,18 @@ import cgi
 import cgitb
 cgitb.enable()
 
-#receives url player came from a.out, and inventory
-urls= {
-    "North":"http://cgi.cs.mcgill.ca/~bcumin1",
-    "South":"http://cgi.cs.mcgill.ca/~bcumin1",
-    "West":"http://cgi.cs.mcgill.ca/~bcumin1",
-    "East":"http://cgi.cs.mcgill.ca/~bcumin1",
-}
+#GET URL AND INVENTORY
+form_inv = cgi.FieldStorage()
+inventory = form_inv["inv"].value
+inventory1 = inventory.replace(',0', '%2')
 
-url='http://cgi.cs.mcgill.ca/~bcumin1/room.html'
-inventory='10,10'
+form_url = cgi.FieldStorage()
+url = form_url["url"].value
 
-form = cgi.FieldStorage()
-direction=form["direction"].value
-base_url = urls[direction]
+url_cprogram="http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?inventory="+inventory1+"C0&user_input=REFRESH"
 
-url_resources=base_url+"/resources.csv"
-url_redirect=base_url+"/cgi-bin/a.out"
-
-occupied="abc"
-response = urllib2.urlopen(url_resources)
+#GET OCCUPIED STATUS
+response = urllib2.urlopen("http://cgi.cs.mcgill.ca/~naharo/cgi-bin/resources.csv")
 csvFile=csv.reader(response)
 manna=0;gold=0;occupied=0;
 for row in csvFile:
@@ -34,20 +26,26 @@ for row in csvFile:
     gold=row[1]
     occupied=row[2]
 
-#if it is occupied
+#ROOM IS OCCUPIED: SEND THEM BACK
 if(occupied != '0'):
-    print("Status: 303 See other")
-    print("Location: /~bcumin1/a.out?user_input=REFRESH")
+    print "Content-type: text/html"
+    print
+    print """
+    <html>
+    <meta http-equiv="refresh" content="0; url=%s"/>
+    </html>
+    """%(url)
+
+#ROOM IS UNOCCUPIED
 else:
-    print("")
-    print("Status: 303 See other")
-    print("Location: /"+url_redirect)
+    with open('resources.csv', 'w') as resources:
+        writer=csv.writer(resources,delimiter=',')
+        writer.writerow([manna,gold,'1'])
 
-
-print "Content-type: text/html"
-print
-print """
-<html>
-    <h1> %s </h1>
-</html>
-"""%(occupied)
+    print "Content-type: text/html"
+    print
+    print """
+     <html>
+    <meta http-equiv="refresh" content="0; url=%s" />
+     </html>
+     """%(url_cprogram)

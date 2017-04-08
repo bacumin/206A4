@@ -9,7 +9,7 @@ const char * redirect_page_format =
 "<html>\n"
 "<head>\n"
 "<meta http-equiv=\"REFRESH\"\n"
-"content=\"0;url=%s\">\n"
+"content=\"0;url=%s?inventory=%d%%2C%d\">\n"
 "</head>\n"
 "</html>\n";
 
@@ -26,6 +26,9 @@ const char * page_print=
 "          alt=\"goat master\""
 "          style=\"width:700px;height:400px;margin: 0px auto; display:block;\">"
 "    </p>"
+"<h3> Your Manna is: %d <br>"
+"             Your Gold is: %d \n"
+"        </h3>"
 ""
 "  <form action=\"room.cgi\" method=\"get\" align=\"center\">"
 "  <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">"
@@ -41,7 +44,7 @@ const char * page_print=
 "      <th>"
 "        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
 "        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
-"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?inventory=%d%%2C%d&user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"North\" />"
 "        </form>"
 "      </th>"
@@ -51,7 +54,7 @@ const char * page_print=
 "      <td>"
 "        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
 "        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
-"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?inventory=%d%%2C%d&user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"West\" />"
 "        </form>"
 "      </td>"
@@ -59,16 +62,16 @@ const char * page_print=
 "      <td>"
 "        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
 "        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
-"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">""        <input type=\"submit\" value=\"East\" />"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?inventory=%d%%2C%d&user_input=REFRESH\">""        <input type=\"submit\" value=\"East\" />"
 "        </form>"
 "      </td>"
 "    </tr>"
 "    <tr>"
 "      <td></td>"
 "      <td> <!-- SHOULD CHANGE THIS TO TRANSPORTER.PY FOR TARGET WEB PAGE -->"
-"        <form action=\"http://cs.mcgill.ca/~naharo/cgi-bin/transporter.py\">"
+"        <form action=\"http://cs.mcgill.ca/~mcamin/cgi-bin/transporter.py\">"
 "        <input type=\"hidden\" name=\"inv\" value=\"%d,%d\">"
-"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?user_input=REFRESH\">"
+"        <input type=\"hidden\" name=\"url\" value=\"http://cgi.cs.mcgill.ca/~naharo/cgi-bin/room.cgi?inventory=%d%%2C%d&user_input=REFRESH\">"
 "        <input type=\"submit\" value=\"South\" />"
 "        </form>"
 "      </td>"
@@ -93,14 +96,19 @@ int drop(n){
 	}
 	refresh();
 	return -1;
-	
+
 }
 
 
 //activates the room's game
 int play(){
+/*	char command[100];
+	snprintf(command, sizeof(command), "%s %d %d", "challenge.py", pManna, pGold);
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf (redirect_page_format, game_name);
+	printf("%s", command);
+	system(command);*/
+	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
+	printf (redirect_page_format, game_name, pManna, pGold);
 	return 0;
 }
 
@@ -137,15 +145,19 @@ int exit1(){
 //redraw the screen with the player's inventory preserved
 int refresh(){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf (page_print, "You have been visited by the question goat.\nAnswer his goat-related questions for 7 years of goat luck!",pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold);
+	printf (page_print, "You have been visited by the question goat.\nAnswer his goat-related questions for 7 years of goat luck!"\
+		,pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold, pManna, pGold,pManna, pGold, pManna, pGold,pManna, pGold,pManna \
+		, pGold,pManna,pGold);
 	return 0;
 }
 
 
 int error1(char* command){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf(page_print,"Error. Command not found.", pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold);
-	
+	char* past_url=getenv("HTTP_REFERER");
+	printf(page_print,"Error. Command not found.", pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold,pManna, pGold, \
+		pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold);
+
 	return 0;
 }
 
@@ -160,7 +172,7 @@ int game_over(){
 int main(void){
 	//general variables
 	getCsv();
-
+	occupied=1;
 	//get from GET
 	char *data=getenv("QUERY_STRING");
 	char command[50];
@@ -168,7 +180,7 @@ int main(void){
 	if (strlen(data)!=0)
 	{
 		sscanf(data, "inventory=%d%%2C%d&user_input=%s", &pManna, &pGold, command);
-		
+
 		if (pGold>=100)
 			game_over();
 		if (strncmp(command, "DROP", 4)==0){
@@ -187,5 +199,6 @@ int main(void){
 	else {
 		refresh();
 	}
+	writeCsv();
 
 }
