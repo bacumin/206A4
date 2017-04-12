@@ -14,7 +14,7 @@ pManna, pGold=inventory.split(',')
 url = form["url"].value
 
 #url of our C program, in cas of success
-url_cprogram="http://cgi.cs.mcgill.ca/~bcumin1/cgi-bin/room.cgi?inventory="+(pManna-1)+ "%%2C" + pGold+"C0&user_input=REFRESH"
+url_cprogram=str"http://cgi.cs.mcgill.ca/~bcumin1/cgi-bin/room.cgi?inventory=%d%%2C%d&user_input=REFRESH", %(pManna-1, pGold)
 
 #GET OCCUPIED STATUS
 response = urllib2.urlopen("http://cgi.cs.mcgill.ca/~bcumin1/cgi-bin/resources.csv")
