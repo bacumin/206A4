@@ -85,16 +85,20 @@ const char * page_print=
 //for every 2 gold pieces user gets 1 manna from the universe
 //the gold pieces are added to the hidden resources of the room
 //and removed from the player's inventory
-int drop(n){
-	if (pGold>2*n){
-		rGold=rGold+2*n;
-		pGold=pGold-2*n;
-		pManna=pManna+n;
+int drop(int n){
+	char* error_command="Error: cannot drop an odd amount of gold pieces. Cannotdrop more than the amount you have.";
+	if (pGold>=n && n%2==0){
+		rGold=rGold+n;
+		pGold=pGold-n;
+		pManna=pManna+(n/2);
 		writeCsv();
-		refresh();
+		refresh("Drop was successful. Enter the next command to find out what's the question goat's goaty question!");
 		return 0;
 	}
-	refresh();
+	else {
+		refresh(error_command);
+	}
+	
 	return -1;
 
 }
@@ -143,9 +147,13 @@ int exit1(){
 }
 
 //redraw the screen with the player's inventory preserved
-int refresh(){
+int refresh(char* message){
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf (page_print, "You have been visited by the question goat.\nAnswer his goat-related questions for 7 years of goat luck!"\
+	char* page_message="You have been visited by the question goat.\nAnswer his goat-related questions for 7 years of goat luck!";
+	if (strlen(message)!=0){
+		page_message=message;
+	}
+	printf (page_print, page_message\
 		,pManna, pGold, pManna, pGold,pManna, pGold,pManna, pGold, pManna, pGold,pManna, pGold, pManna, pGold,pManna, pGold,pManna \
 		, pGold,pManna,pGold);
 	return 0;
@@ -163,42 +171,78 @@ int error1(char* command){
 
 int game_over(){
 	occupied=0;
+	rGold=pGold+rGold;
 	writeCsv();
 	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
-	printf("<h1>You won! Game over.");
+
+	FILE *f = fopen("dead.html", "r");      // open the specified file
+    if (f != NULL)
+    {
+        int c;
+
+        while ((c = fgetc(f)) != EOF)     // read character from file until EOF
+        {
+            putchar(c);                   // output character
+        }
+        fclose(f);
+    }
 	return 0;
 }
+
+
+int game_won(){
+	occupied=0;
+	writeCsv();
+	printf("%s%c%c\n", "Content-Type:text/html;charset=iso-8859-1",13,10);
+	FILE *f = fopen("success.html", "r");      // open the specified file
+    if (f != NULL)
+    {
+        int c;
+
+        while ((c = fgetc(f)) != EOF)     // read character from file until EOF
+        {
+            putchar(c);                   // output character
+        }
+    fclose(f);
+	}
+}
+
+
+
 //read command and compare
 int main(void){
-	//general variables
-	getCsv();
-	occupied=1;
-	//get from GET
-	char *data=getenv("QUERY_STRING");
-	char command[50];
-	int n=0;
+//general variables
+getCsv();
+occupied=1;
+//get from GET
+char *data=getenv("QUERY_STRING");
+char command[50];
+int n=0;
+
 	if (strlen(data)!=0)
 	{
 		sscanf(data, "inventory=%d%%2C%d&user_input=%s", &pManna, &pGold, command);
-
-		if (pGold>=100)
+		if (pManna<=0)
 			game_over();
-		if (strncmp(command, "DROP", 4)==0){
-			sscanf(command, "%s+%d", command, n);
+		else if (pGold>=100)
+			game_won();
+		else if (strncmp(command, "DROP", 4)==0 || strncmp(command, "drop", 4)==0){
+			n=command[5]-'0';
 			drop(n);
 		}
-		else if (strcmp(command, "PLAY")==0)
+		else if (strcmp(command, "PLAY")==0 || strcmp(command, "play")==0)
 			play();
-		else if (strcmp(command, "EXIT")==0)
+		else if (strcmp(command, "EXIT")==0 || strcmp(command, "exit")==0)
 			exit1();
-		else if (strcmp(command, "REFRESH")==0)
-			refresh();
+		else if (strcmp(command, "REFRESH")==0 || strcmp(command, "refresh")==0)
+			refresh("");
 		else
 			error1(command);
 	}
 	else {
-		refresh();
+		refresh("");
 	}
 	writeCsv();
+		
 
 }
